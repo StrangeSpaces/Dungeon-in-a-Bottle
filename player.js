@@ -2,7 +2,23 @@ Player.prototype = Object.create(Entity.prototype);
 Player.prototype.parent = Entity.prototype;
 
 function Player() {
-    Entity.call(this);
+    Entity.call(this, 'pact');
+
+    this.frame.width = 32;
+    this.frame.height = 32;
+
+    this.f = 0;
+    this.counter = 0;
+    this.anim = "idle";
+    this.default = "idle";
+
+    this.anims = {
+        "idle":[0, 1, 2, 3, 4, 5],
+        "run":[6, 7, 8, 9, 10, 11],
+        "jump":[12, 12],
+        "up":[13,14],
+        "down":[15,16],
+    }
 
     this.acc = 0.3;
     this.friction = {
@@ -16,7 +32,7 @@ function Player() {
     this.sprite.anchor.x = 0.5;
     this.sprite.anchor.y = 0.5;
 
-    this.size = new Vec(8, 8);
+    this.size = new Vec(7, 16);
     this.onGround = false;
     this.leftWall = false;
     this.rightWall = false;
@@ -83,15 +99,28 @@ Player.prototype.onCollide = function(leftOrRight) {
     }
 };
 
+Player.prototype.playAnim = function(anim) {
+    if (anim != this.anim) {
+        this.anim = anim;
+        this.f = 0;
+        this.counter = 0;
+    }
+}
+
 Player.prototype.update = function() {
     if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
+        if (this.onGround) this.playAnim("idle");
     } else {
         this.vel.x -= Math.sign(this.vel.x) * this.friction[this.onGround];
+        if (this.onGround) this.playAnim("run");
     }
 
     if (Key.isDown(Key.UP)) {
         if (this.letGo == true) {
+            this.playAnim("jump");
+            this.default = "up";
+
             if (this.onGround) {
                 this.vel.y = -this.jumpAmount;
                 console.log("jump");
@@ -131,10 +160,9 @@ Player.prototype.update = function() {
     this.rightLock--;
 
     this.vel.y += this.gravity;
-
-    this.frame.x += 0.25;
-    if (this.frame.x + 16 >= 64) {
-        this.frame.x = 0;
+    if (!this.onGround && this.vel.y > 0) {
+        this.playAnim("down");
+        this.default = "down";
     }
 
     this.onGround = false;
@@ -151,3 +179,27 @@ Player.prototype.update = function() {
 
     this.updateGraphics();
 };
+
+Player.prototype.updateGraphics = function() {
+    this.counter++;
+    if (this.counter >= 6) {
+        this.counter = 0;
+        this.f++;
+        if (this.anims[this.anim].length <= this.f) {
+            this.f = 0;
+            this.anim = this.default;
+        }
+    }
+
+    if (this.vel.x < 0) {
+        this.sprite.scale.x = -1;
+    } else if (this.vel.x > 0) {
+        this.sprite.scale.x = 1;
+    }
+
+    var frame = this.anims[this.anim][this.f];
+    this.frame.x = frame % 6 * 32;
+    this.frame.y = Math.floor(frame / 6) * 32;
+
+    Entity.prototype.updateGraphics.call(this);
+}

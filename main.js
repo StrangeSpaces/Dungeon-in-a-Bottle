@@ -93,7 +93,8 @@ function init() {
   
   renderer.backgroundColor = 0xFFFFFF;
   
-  PIXI.loader.add('bunny', 'test.png').load(function (loader, res) {
+  PIXI.loader.add('bunny', 'test.png')
+             .add('pact', 'pact.png').load(function (loader, res) {
       resources = res;
 
       start();

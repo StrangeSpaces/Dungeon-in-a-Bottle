@@ -23,14 +23,14 @@ Vec.prototype.setLength = function(target) {
     }
 }
 
-function Entity() {
+function Entity(file) {
     this.pos = new Vec(200, 200);
     this.vel = new Vec(0, 0);
 
     this.height = 0;
 
     this.frame = new PIXI.Rectangle(0, 0, 16, 16);
-    this.sprite = new PIXI.Sprite(new PIXI.Texture(resources.bunny.texture, this.frame)); 
+    this.sprite = new PIXI.Sprite(new PIXI.Texture(resources[file || 'bunny'].texture, this.frame)); 
 
     mainContainer.addChild(this.sprite);
 }
