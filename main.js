@@ -30,7 +30,7 @@ function animate() {
         rightVel = -0.25;
     }
 
-    for (var i = 0; i < entities.length; i++) {
+    for (var i = entities.length - 1; i >= 0; i--) {
         entities[i].update();
     }
 
@@ -50,6 +50,28 @@ function resizeHandler() {
 
   renderer.resize(newWidth, newHeight);
   mainContainer.scale.set(scaleFactor); 
+};
+
+function start() {
+    mainContainer.removeChildren();
+    entities.length = 0;
+    entities.push(new Player());
+
+    for (x=0;x<20;x++) {
+        for (y=0;y<15;y++) {
+            if (y >= 14 && x != 0 && x != 19) {
+                entities.push(new Tile(x, y));
+            }
+            if (x == 0) {
+                entities.push(new Tile(x, y, 'left'));
+            }
+            if (x == 19) {
+                entities.push(new Tile(x, y, 'right'));
+            }
+        }
+    }
+
+    entities.push(new Spike(18, 10, 'right'))
 };
 
 function init() {
@@ -73,15 +95,8 @@ function init() {
   
   PIXI.loader.add('bunny', 'test.png').load(function (loader, res) {
       resources = res;
-      entities.push(new Player());
 
-      for (x=0;x<20;x++) {
-        for (y=0;y<15;y++) {
-          if (y >= 14 || x == 0 || x == 19) {
-            entities.push(new Tile(x, y));
-          }
-        }
-      }
+      start();
 
       // kick off the animation loop (defined below)
       animate();

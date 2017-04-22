@@ -2,9 +2,10 @@ var Key = {
   _pressed: {},
 
   LEFT: 65,
-  UP: 87,
+  UP: 32,
   RIGHT: 68,
   DOWN: 83,
+  R: 82,
   
   isDown: function(keyCode) {
     return this._pressed[keyCode];
