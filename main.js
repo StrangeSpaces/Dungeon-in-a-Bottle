@@ -1,5 +1,5 @@
-var logicalWidth = 640;
-var logicalHeight = 480;
+var logicalWidth = 320;
+var logicalHeight = 240;
 
 var renderer = null;
 var stage = null;
@@ -22,9 +22,9 @@ function animate() {
 
 function resizeHandler() {
   var scaleFactor = Math.min(
-    window.innerWidth / logicalWidth,
-    window.innerHeight / logicalHeight
-  );
+    Math.floor(window.innerWidth / logicalWidth),
+    Math.floor(window.innerHeight / logicalHeight)
+  ) || 1;
   var newWidth = Math.ceil(logicalWidth * scaleFactor);
   var newHeight = Math.ceil(logicalHeight * scaleFactor);
   
@@ -57,6 +57,14 @@ function init() {
   PIXI.loader.add('bunny', 'test.png').load(function (loader, res) {
       resources = res;
       entities.push(new Player());
+
+      for (x=0;x<20;x++) {
+        for (y=0;y<15;y++) {
+          if (y >= 14) {
+            entities.push(new Tile(x, y));
+          }
+        }
+      }
 
       // kick off the animation loop (defined below)
       animate();

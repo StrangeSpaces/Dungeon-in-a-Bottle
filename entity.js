@@ -30,18 +30,20 @@ function Entity() {
     this.height = 0;
 
     this.frame = new PIXI.Rectangle(0, 0, 16, 16);
-
-    this.sprite = new PIXI.Sprite(resources.bunny.texture);
-    this.sprite.texture.frame = this.frame;
+    this.sprite = new PIXI.Sprite(new PIXI.Texture(resources.bunny.texture, this.frame)); 
 
     mainContainer.addChild(this.sprite);
+}
+
+Entity.prototype.updateGraphics = function() {
+    this.sprite.position.x = this.pos.x;
+    this.sprite.position.y = this.pos.y;
+    this.sprite.texture.frame = this.frame;
 }
 
 Entity.prototype.update = function() {
     this.pos.x += this.vel.x;
     this.pos.y += this.vel.y;
 
-    this.sprite.position.x = this.pos.x;
-    this.sprite.position.y = this.pos.y;
-    this.sprite.texture.frame = this.frame;
+    this.updateGraphics();
 };
