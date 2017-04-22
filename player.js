@@ -110,10 +110,16 @@ Player.prototype.playAnim = function(anim) {
 Player.prototype.update = function() {
     if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
-        if (this.onGround) this.playAnim("idle");
+        if (this.onGround) {
+            this.playAnim("idle");
+            this.default = "idle";
+        }
     } else {
         this.vel.x -= Math.sign(this.vel.x) * this.friction[this.onGround];
-        if (this.onGround) this.playAnim("run");
+        if (this.onGround) {
+            this.playAnim("run");
+            this.default = "run";
+        }
     }
 
     if (Key.isDown(Key.UP)) {
