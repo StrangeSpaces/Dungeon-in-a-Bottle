@@ -1,6 +1,9 @@
 var logicalWidth = 320;
 var logicalHeight = 240;
 
+var leftVel = 0.25;
+var rightVel = -0.25;
+
 var renderer = null;
 var stage = null;
 var mainContainer = null;
@@ -13,7 +16,21 @@ function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
 
-    for (var i = entities.length - 1; i >= 0; i--) {
+    if (leftVel < 0.25) {
+        leftVel += 0.01;
+    }
+    if (leftVel >= 0.25) {
+        leftVel = 0.25;
+    }
+
+    if (rightVel > -0.25) {
+        rightVel -= 0.01;
+    }
+    if (rightVel <= -0.25) {
+        rightVel = -0.25;
+    }
+
+    for (var i = 0; i < entities.length; i++) {
         entities[i].update();
     }
 

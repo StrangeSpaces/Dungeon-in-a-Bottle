@@ -5,9 +5,13 @@ function Player() {
     Entity.call(this);
 
     this.acc = 0.3;
-    this.friction = 0.1;
+    this.friction = {
+        true: 0.1,
+        false: 0.02
+    };
     this.maxSpeed = 2;
     this.jumpAmount = 4;
+    this.gravity = 0.15;
 
     this.sprite.anchor.x = 0.5;
     this.sprite.anchor.y = 0.5;
@@ -16,6 +20,11 @@ function Player() {
     this.onGround = false;
     this.leftWall = false;
     this.rightWall = false;
+
+    this.leftLock = 0;
+    this.rightLock = 0;
+
+    this.letGo = false;
 };
 
 Player.prototype.collide = function(leftOrRight) {
@@ -49,34 +58,48 @@ Player.prototype.collide = function(leftOrRight) {
 
 Player.prototype.onCollide = function(leftOrRight) {
     if (leftOrRight) {
-        this.vel.x = 0;
+        if (this.leftWall) {
+            this.vel.x = Math.min(this.vel.x, leftVel);
+        } else {
+            this.vel.y = Math.max(this.vel.x, rightVel);
+        }
     } else {
         this.vel.y = 0;
         this.onGround = true;
+        this.leftLock = 0;
+        this.rightLock = 0;
     }
 };
 
 Player.prototype.update = function() {
     if (Key.isDown(Key.UP)) {
-        if (this.onGround) this.vel.y = -this.jumpAmount;
-        else if (this.leftWall) {
-            this.vel.y = -this.jumpAmount;
-            this.vel.x = this.maxSpeed;
-        } else if (this.rightWall) {
-            this.vel.y = -this.jumpAmount;
-            this.vel.x = -this.maxSpeed;
+        if (this.letGo == true) {
+            if (this.onGround) this.vel.y = -this.jumpAmount;
+            else if (this.leftWall) {
+                this.vel.y = -this.jumpAmount * 0.9;
+                this.vel.x = this.maxSpeed;
+                this.leftLock = 20;
+                leftVel = -0.5;
+            } else if (this.rightWall) {
+                this.vel.y = -this.jumpAmount * 0.9;
+                this.vel.x = -this.maxSpeed;
+                this.rightLock = 20;
+                rightVel = 0.5;
+            }
         }
-    } else if (this.vel.y < 0) {
-        this.vel.y *= 0.25;
+        this.letGo = false;
+    } else {
+        this.letGo = true;
+        if (this.vel.y < 0) this.vel.y *= 0.25;
     }
 
-    if (Key.isDown(Key.LEFT)) this.vel.x -= this.acc;
-    if (Key.isDown(Key.RIGHT)) this.vel.x += this.acc;
+    if (Key.isDown(Key.LEFT) && this.leftLock <= 0) this.vel.x -= this.acc;
+    if (Key.isDown(Key.RIGHT) && this.rightLock <= 0) this.vel.x += this.acc;
 
-    if (Math.abs(this.vel.x) <= this.friction) {
+    if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
     } else {
-        this.vel.x -= Math.sign(this.vel.x) * this.friction;
+        this.vel.x -= Math.sign(this.vel.x) * this.friction[this.onGround];
     }
 
     if (this.vel.x < -this.maxSpeed) {
@@ -85,7 +108,10 @@ Player.prototype.update = function() {
         this.vel.x = this.maxSpeed;
     }
 
-    this.vel.y += 0.1;
+    this.leftLock--;
+    this.rightLock--;
+
+    this.vel.y += this.gravity;
 
     this.frame.x += 0.25;
     if (this.frame.x + 16 >= 64) {
