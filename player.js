@@ -14,6 +14,8 @@ function Player() {
 
     this.size = new Vec(8, 8);
     this.onGround = false;
+    this.leftWall = false;
+    this.rightWall = false;
 };
 
 Player.prototype.collide = function(leftOrRight) {
@@ -27,8 +29,10 @@ Player.prototype.collide = function(leftOrRight) {
             if (leftOrRight) {
                 if (this.pos.x - (ent.pos.x + 8) > 0) {
                     this.pos.x = ent.pos.x + 16 + this.size.x;
+                    this.leftWall = true;
                 } else {
                     this.pos.x = ent.pos.x - this.size.x;
+                    this.rightWall = true;
                 }
             } else {
                 if (this.pos.y - (ent.pos.y + 8) > 0) {
@@ -55,6 +59,13 @@ Player.prototype.onCollide = function(leftOrRight) {
 Player.prototype.update = function() {
     if (Key.isDown(Key.UP)) {
         if (this.onGround) this.vel.y = -this.jumpAmount;
+        else if (this.leftWall) {
+            this.vel.y = -this.jumpAmount;
+            this.vel.x = this.maxSpeed;
+        } else if (this.rightWall) {
+            this.vel.y = -this.jumpAmount;
+            this.vel.x = -this.maxSpeed;
+        }
     } else if (this.vel.y < 0) {
         this.vel.y *= 0.25;
     }
@@ -82,6 +93,9 @@ Player.prototype.update = function() {
     }
 
     this.onGround = false;
+    this.leftWall = false;
+    this.rightWall = false;
+
     this.pos.x += this.vel.x;
     this.collide(true);
     this.pos.y += this.vel.y;

@@ -60,7 +60,7 @@ function init() {
 
       for (x=0;x<20;x++) {
         for (y=0;y<15;y++) {
-          if (y >= 14) {
+          if (y >= 14 || x == 0 || x == 19) {
             entities.push(new Tile(x, y));
           }
         }
