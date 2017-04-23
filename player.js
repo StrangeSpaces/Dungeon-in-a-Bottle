@@ -90,7 +90,7 @@ Player.prototype.collide = function(leftOrRight) {
 Player.prototype.onCollide = function(leftOrRight) {
     if (leftOrRight) {
         if (this.leftWall && this.rightWall) {
-            
+            start();
         }
         if (this.leftWall) {
             this.vel.x = Math.max(this.vel.x, leftVel);
@@ -203,6 +203,7 @@ Player.prototype.update = function() {
     this.pushRight = false;
 
     this.pos.x += this.vel.x;
+    this.collide(true);
     this.collide(true);
 
     this.pos.y += this.vel.y;

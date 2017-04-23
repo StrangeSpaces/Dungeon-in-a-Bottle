@@ -1,8 +1,10 @@
-var logicalWidth = 160;
+var logicalWidth = 12 * 16;
 var logicalHeight = 288;
 
 var leftVel = 0.25;
 var rightVel = -0.25;
+var leftX = 16;
+var rightX = 16;
 
 var renderer = null;
 var stage = null;
@@ -16,19 +18,26 @@ function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
 
-    if (leftVel < 0.25) {
-        leftVel += 0.01;
-    }
-    if (leftVel >= 0.25) {
-        leftVel = 0.25;
+    if (leftX + rightX >= 12 * 16) {
+        leftVel = rightVel = 0;
+    } else {
+        if (leftVel < 0.25) {
+            leftVel += 0.01;
+        }
+        if (leftVel >= 0.25) {
+            leftVel = 0.25;
+        }
+
+        if (rightVel > -0.25) {
+            rightVel -= 0.01;
+        }
+        if (rightVel <= -0.25) {
+            rightVel = -0.25;
+        }
     }
 
-    if (rightVel > -0.25) {
-        rightVel -= 0.01;
-    }
-    if (rightVel <= -0.25) {
-        rightVel = -0.25;
-    }
+    leftX += leftVel;
+    rightX -= rightVel;
 
     for (var i = entities.length - 1; i >= 0; i--) {
         entities[i].update();
@@ -53,38 +62,59 @@ function resizeHandler() {
 };
 
 function loadLevel() {
-    console.error("start");
+    var level = levels[2];
+    var startX;
+    var startY;
     for (var u = level.layers.length - 1; u >= 0; u--) {
-        var offset = 0;
+        var offset = -3;
         var side;
         if (u == 0) {
-            offset = 9;
+            offset = 2;
             side = 'right';
         } else if (u == 1) {
-            offset = -9;
+            offset = -8;
             side = 'left';
         }
 
         for (var i = 0; i < level.layers[u].data.length; i++) {
-            var tile = level.layers[u].data[i];
-            if (tile > 0) {
-                var t = new Tile(i % 10 + offset, Math.floor(i / 10), side);
-                t.setTile(tile - 1);
+            var tile = level.layers[u].data[i] - 1;
+            if (tile >= 0) {
+                var t;
+                if ([42, 43, 44, 45].indexOf(tile) != -1) {
+                    t = new Spike(i % 18 + offset, Math.floor(i / 18), side);
+                } else {
+                    t = new Tile(i % 18 + offset, Math.floor(i / 18), side);
+                }
+                t.setTile(tile);
+
                 if (u != 3) {
                     entities.push(t);
                 }
+                if (tile == 11) {
+                    startX = t.pos.x + 16;
+                    startY = t.pos.y;
+                }
             }
+        }
+
+        if (u == 3) {
+            var p = new Player();
+            p.pos.x = startX || t.pos.x;
+            p.pos.y = startY || t.pos.y;
+
+            entities.push(p);
         }
     }
 }
 
 function start() {
+    leftX = 16;
+    rightX = 16;
     leftVel = 0.25;
     rightVel = -0.25;
 
     mainContainer.removeChildren();
     entities.length = 0;
-    entities.push(new Player());
 
     loadLevel();
 
