@@ -69,7 +69,7 @@ function resizeHandler() {
 
 function loadLevel() {
     var level = levels[currentLevel];
-    var startX = 100;
+    var startX = 50;
     var startY = 200;
     var door = [];
 
@@ -93,6 +93,7 @@ function loadLevel() {
                 } else {
                     t = new Tile(i % 18 + offset, Math.floor(i / 18), side);
                 }
+                console.log(tile);
                 t.setTile(tile);
 
                 if (u != 3) {

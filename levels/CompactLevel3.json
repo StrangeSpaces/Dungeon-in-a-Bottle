@@ -6,7 +6,7 @@
          "name":"Right",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":18,
          "x":0,
          "y":0
@@ -17,7 +17,7 @@
          "name":"Left",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":18,
          "x":0,
          "y":0
@@ -53,12 +53,12 @@
          "columns":14,
          "firstgid":1,
          "image":"CompactTiles.png",
-         "imageheight":80,
+         "imageheight":176,
          "imagewidth":224,
          "margin":0,
          "name":"CompactTiles",
          "spacing":0,
-         "tilecount":70,
+         "tilecount":154,
          "tileheight":16,
          "tilewidth":16
         }],

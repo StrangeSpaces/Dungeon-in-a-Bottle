@@ -201,7 +201,7 @@ Player.prototype.update = function() {
             this.sprite.visible = true;
             for (var i = entities.length - 1; i >= 0; i--) {
                 if (entities[i].type == 'enter') {
-                    entities[i].setTile(entities[i].tile - 58 - 14 * 4);
+                    entities[i].setTile(entities[i].tile - 54 - 14 * 4);
                 }
             }
         } else if (this.startCount % 6 == 0) {
