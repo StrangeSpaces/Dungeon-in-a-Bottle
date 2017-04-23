@@ -71,7 +71,7 @@ function loadLevel() {
     var level = levels[currentLevel];
     var startX = 100;
     var startY = 200;
-    var door;
+    var door = [];
 
     for (var u = level.layers.length - 1; u >= 0; u--) {
         var offset = -3;
@@ -99,11 +99,16 @@ function loadLevel() {
                     entities.push(t);
                 } else if ([7,8,21,22,35,36].indexOf(tile) != -1) {
                     t.type = 'door';
-                    door = t;
+                    t.size.x = -6;
+                    door.push(t);
+                } else if ([7,8,21,22,35,36].indexOf(tile - 4) != -1) {
+                    t.type = 'enter';
+                    t.setTile(tile + 60 + 14 * 3);
+                    door.push(t);
                 }
                 if (tile == 11) {
                     startX = t.pos.x + 8;
-                    startY = t.pos.y + 8;
+                    startY = t.pos.y + 26;
                 }
             }
         }
@@ -113,9 +118,11 @@ function loadLevel() {
             p.pos.x = startX || t.pos.x;
             p.pos.y = startY || t.pos.y;
             p.updateGraphics();
-
             entities.push(p);
-            entities.push(door);
+
+            for (var d = door.length - 1; d >= 0; d--) {
+                entities.push(door[d]);
+            }
         }
     }
 }

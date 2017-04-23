@@ -25,6 +25,7 @@ function Player() {
         "getup": [32, 33, 34, 35],
     }
 
+    this.sprite.visible = false;
     this.frame.width = 32;
     this.frame.height = 32;
     this.updateGraphics();
@@ -56,7 +57,20 @@ function Player() {
     this.letGo = false;
 
     this.won = false;
+    this.resCount = 0;
+    this.startCount = 18;
 };
+
+Player.prototype.win = function() {
+    this.won = true;
+    this.resCount = 12;
+    for (var i = entities.length - 1; i >= 0; i--) {
+        if (entities[i].type == 'door') {
+            entities[i].setTile(entities[i].tile + 64);
+        }
+    }
+    this.updateGraphics();
+}
 
 Player.prototype.collide = function(leftOrRight) {
     for (var i = entities.length - 1; i >= 1; i--) {
@@ -67,14 +81,16 @@ Player.prototype.collide = function(leftOrRight) {
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
+            if (ent.type == 'enter') {
+                break;
+            }
+
             if (ent.type == 'spike') {
                 start();
                 return
             }
             if (ent.type == 'door' && !this.won) {
-                this.won = true;
-                currentLevel++;
-                start();
+                if (this.onGround) this.win();
                 return
             }
 
@@ -126,10 +142,22 @@ Player.prototype.onCollide = function(leftOrRight, ent) {
                 this.vel.x = 2;
             }
         } else {
-            if (this.leftWall) {
-                this.vel.x = ent.vel.x - 0.05;
+            if (this.anim == "run") {
+                if (this.pushLeft) {
+                    leftVel = -0.25;
+                    this.vel.x = -0.25;
+                } else if (this.pushRight) {
+                    rightVel = 0.25;
+                    this.vel.x = 0.25;
+                } else {
+                    this.vel.x = ent.vel.x;
+                }
             } else {
-                this.vel.x = ent.vel.x + 0.05;
+                if (this.leftWall) {
+                    this.vel.x = ent.vel.x - 0.05;
+                } else {
+                    this.vel.x = ent.vel.x + 0.05;
+                }
             }
         }
 
@@ -167,6 +195,40 @@ Player.prototype.fall = function() {
 }
 
 Player.prototype.update = function() {
+    if (this.startCount > 0) {
+        this.startCount--;
+        if (this.startCount <= 0) {
+            this.sprite.visible = true;
+            for (var i = entities.length - 1; i >= 0; i--) {
+                if (entities[i].type == 'enter') {
+                    entities[i].setTile(entities[i].tile - 58 - 14 * 4);
+                }
+            }
+        } else if (this.startCount % 6 == 0) {
+            for (var i = entities.length - 1; i >= 0; i--) {
+                if (entities[i].type == 'enter') {
+                    entities[i].setTile(entities[i].tile + 4);
+                }
+            }
+        }
+        return
+    }
+    if (this.won) {
+        this.resCount--;
+        if (this.resCount == 0) {
+            currentLevel++;
+            start();
+        }
+        else if (this.resCount % 6 == 0) {
+            for (var i = entities.length - 1; i >= 0; i--) {
+                if (entities[i].type == 'door') {
+                    entities[i].setTile(entities[i].tile + 4);
+                }
+            }
+        }
+        return;
+    }
+
     if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
     } else {
@@ -304,6 +366,11 @@ Player.prototype.update = function() {
 };
 
 Player.prototype.updateGraphics = function() {
+    if (this.won) {
+        this.sprite.visible = false;
+        return;
+    }
+
     this.counter++;
     if (this.counter >= 6) {
         this.counter = 0;

@@ -25,6 +25,7 @@ function Tile(x, y, side) {
 Tile.prototype.setTile = function(tile) {
     this.frame.x = tile % 14 * 16;
     this.frame.y = Math.floor(tile / 14) * 16;
+    this.tile = tile;
 
     this.updateGraphics();
 }
