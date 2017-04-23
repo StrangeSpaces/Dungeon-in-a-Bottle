@@ -318,12 +318,12 @@ Player.prototype.updateGraphics = function() {
                     this.vel.y = -this.jumpAmount * 1.2;
                     this.vel.x = this.maxSpeed[this.anim == "rejump"];
                     this.leftLock = 25;
-                    if (this.pushLeft) leftVel = -0.5;
+                    if (this.pushLeft) leftVel = -0.75;
                 } else {
                     this.vel.y = -this.jumpAmount * 1.2;
                     this.vel.x = -this.maxSpeed[this.anim == "rejump"];
                     this.rightLock = 25;
-                    if (this.pushRight) rightVel = 0.5;
+                    if (this.pushRight) rightVel = 0.75;
                 }
 
                 this.sprite.scale.x *= -1;
