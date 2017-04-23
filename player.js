@@ -13,9 +13,16 @@ function Player() {
         "idle":[0, 1, 2, 3, 4, 5],
         "run":[6, 7, 8, 9, 10, 11],
         "jump":[12, 12],
+        "walljump":[19, 20, 21],
         "up":[13,14],
         "down":[15,16],
         "slide":[18],
+        "super":[24, 25],
+        "rebound":[26,27],
+        "rejump":[28,29],
+        "airfail": [22, 23],
+        "wallfail": [30, 31],
+        "getup": [32, 33, 34, 35],
     }
 
     this.frame.width = 32;
@@ -64,7 +71,6 @@ Player.prototype.collide = function(leftOrRight) {
             if (ent.type == 'door' && !this.won) {
                 this.won = true;
                 currentLevel++;
-                console.log(currentLevel);
                 start();
                 return
             }
@@ -87,7 +93,7 @@ Player.prototype.collide = function(leftOrRight) {
                 }
             }
 
-            this.onCollide(leftOrRight);
+            this.onCollide(leftOrRight, ent);
             c++;
             if (c > 1) {
                 console.log("Multiple");
@@ -96,15 +102,42 @@ Player.prototype.collide = function(leftOrRight) {
     }
 };
 
-Player.prototype.onCollide = function(leftOrRight) {
+Player.prototype.onCollide = function(leftOrRight, ent) {
     if (leftOrRight) {
         if (this.leftWall && this.rightWall) {
             start();
         }
-        if (this.leftWall) {
-            this.vel.x = Math.max(this.vel.x, leftVel);
+
+        if (this.anim == "rebound") {
+            if (this.leftWall) {
+                this.vel.x = -2;
+            } else {
+                this.vel.x = 2;
+            }
+        } else if (this.anim == "airfail") {
+            this.playAnim("wallfail");
+            this.default = "wallfail";
+            if (this.leftWall) {
+                this.vel.x = -2;
+            } else {
+                this.vel.x = 2;
+            }
         } else {
-            this.vel.x = Math.min(this.vel.x, rightVel);
+            if (this.leftWall) {
+                this.vel.x = ent.vel.x - 0.05;
+            } else {
+                this.vel.x = ent.vel.x + 0.05;
+            }
+        }
+
+        if (this.anim == "super") {
+            this.playAnim("rebound");
+
+            if (this.leftWall) {
+                this.vel.x = -2;
+            } else {
+                this.vel.x = 2;
+            }
         }
     } else {
         this.vel.y = 0;
@@ -122,6 +155,14 @@ Player.prototype.playAnim = function(anim) {
     }
 }
 
+Player.prototype.fall = function() {
+    this.vel.y += this.gravity;
+    if (!this.onGround && this.vel.y > 0 && this.anim != "super" && this.anim != "airfail") {
+        this.playAnim("down");
+        this.default = "down";
+    }
+}
+
 Player.prototype.update = function() {
     if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
@@ -130,47 +171,67 @@ Player.prototype.update = function() {
     }
 
     if (this.onGround) {
-        if (Key.isDown(Key.LEFT) || Key.isDown(Key.RIGHT)) {
-            if (Key.isDown(Key.LEFT)) {
-                this.sprite.scale.x = -1;
-            } else {
-                this.sprite.scale.x = 1;
-            }
-            this.playAnim("run");
-            this.default = "run";
-        } else {
-            this.playAnim("idle");
+        if (this.anim == "wallfail" || this.anim == "airfail") {
+            this.playAnim("getup");
             this.default = "idle";
+        }
+
+        if (this.anim != "getup") {
+            if (Key.isDown(Key.LEFT) || Key.isDown(Key.RIGHT)) {
+                if (Key.isDown(Key.LEFT)) {
+                    this.sprite.scale.x = -1;
+                } else {
+                    this.sprite.scale.x = 1;
+                }
+                this.playAnim("run");
+                this.default = "run";
+            } else {
+                this.playAnim("idle");
+                this.default = "idle";
+            }
         }
     }
 
     if (Key.isDown(Key.UP)) {
         if (this.letGo == true) {
-            this.playAnim("jump");
-            this.default = "up";
+            if (["airfail", "wallfail", "rebound", "getup"].indexOf(this.anim) == -1) {
+                if (this.onGround) {
+                    this.vel.y = -this.jumpAmount;
 
-            if (this.onGround) {
-                this.vel.y = -this.jumpAmount;
-            } else if (this.leftWall) {
-                this.vel.y = -this.jumpAmount * 0.9;
-                this.vel.x = this.maxSpeed;
-                this.leftLock = 20;
-                if (this.pushLeft) leftVel = -0.5;
-            } else if (this.rightWall) {
-                this.vel.y = -this.jumpAmount * 0.9;
-                this.vel.x = -this.maxSpeed;
-                this.rightLock = 20;
-                if (this.pushRight) rightVel = 0.5;
+                    this.playAnim("up");
+                    this.default = "up";
+                } else if (this.leftWall) {
+                    this.vel.y = -this.jumpAmount * 0.9;
+                    this.vel.x = this.maxSpeed;
+                    this.leftLock = 20;
+                    if (this.pushLeft) leftVel = -0.5;
+
+                    this.playAnim("walljump");
+                    this.default = "up";
+                } else if (this.rightWall) {
+                    this.vel.y = -this.jumpAmount * 0.9;
+                    this.vel.x = -this.maxSpeed;
+                    this.rightLock = 20;
+                    if (this.pushRight) rightVel = 0.5;
+
+                    this.playAnim("walljump");
+                    this.default = "up";
+                } else {
+                    this.playAnim("super");
+                }
             }
         }
         this.letGo = false;
     } else {
         this.letGo = true;
-        if (this.vel.y < 0) this.vel.y *= 0.5;
+        // if (this.vel.y < 0) this.vel.y *= 0.5;
     }
 
-    if (Key.isDown(Key.LEFT) && this.leftLock <= 0) this.vel.x -= this.acc;
-    if (Key.isDown(Key.RIGHT) && this.rightLock <= 0) this.vel.x += this.acc;
+    if (["airfail", "wallfail", "rebound", "getup"].indexOf(this.anim) == -1) {
+        if (Key.isDown(Key.LEFT) && this.leftLock <= 0) this.vel.x -= this.acc;
+        if (Key.isDown(Key.RIGHT) && this.rightLock <= 0) this.vel.x += this.acc;
+    }
+
     if (Key.isDown(Key.R)) {
         if (this.d) start();
     } else {
@@ -186,23 +247,41 @@ Player.prototype.update = function() {
     this.leftLock--;
     this.rightLock--;
 
-    if ((this.leftWall || this.rightWall) && !this.onGround && this.vel.y >= 0) {
-        this.vel.y += this.gravity / 2;
-        this.playAnim("slide");
-        this.default = "slide";
-        if (this.leftWall) {
-            this.sprite.scale.x = 1;
-            this.offset.x = -2;
+    if ((this.leftWall || this.rightWall) && !this.onGround) {
+        if (this.anim == "wallfail") {
+            if (this.leftWall) {
+                this.sprite.scale.x = -1;
+            } else {
+                this.sprite.scale.x = 1;
+            }
+            this.vel.y += this.gravity;
+        } else if (this.anim == "rebound") {
+            this.vel.y = 0;
+
+            if (this.leftWall) {
+                this.sprite.scale.x = -1;
+                this.offset.x = 5;
+            } else {
+                this.sprite.scale.x = 1;
+                this.offset.x = -5;
+            }
+        } else if (this.vel.y >= 0) {
+            this.vel.y += this.gravity / 2;
+
+            this.playAnim("slide");
+            this.default = "slide";
+            if (this.leftWall) {
+                this.sprite.scale.x = 1;
+                this.offset.x = -2;
+            } else {
+                this.sprite.scale.x = -1;
+                this.offset.x = 2;
+            }
         } else {
-            this.sprite.scale.x = -1;
-            this.offset.x = 2;
+            this.fall();
         }
     } else {
-        this.vel.y += this.gravity;
-        if (!this.onGround && this.vel.y > 0) {
-            this.playAnim("down");
-            this.default = "down";
-        }
+        this.fall();
     }
 
     this.onGround = false;
@@ -226,13 +305,36 @@ Player.prototype.updateGraphics = function() {
     if (this.counter >= 6) {
         this.counter = 0;
         this.f++;
+
         if (this.anims[this.anim].length <= this.f) {
-            this.f = 0;
-            this.anim = this.default;
+            if (this.anim == "rebound") {
+                this.playAnim("rejump");
+                this.default = "rejump";
+
+                if (this.leftWall) {
+                    this.vel.y = -this.jumpAmount * 1.2;
+                    this.vel.x = this.maxSpeed;
+                    this.leftLock = 20;
+                    if (this.pushLeft) leftVel = -0.5;
+                } else {
+                    this.vel.y = -this.jumpAmount * 1.2;
+                    this.vel.x = -this.maxSpeed;
+                    this.rightLock = 20;
+                    if (this.pushRight) rightVel = 0.5;
+                }
+
+                this.sprite.scale.x *= -1;
+            } else if (this.anim == "super") {
+                this.playAnim("airfail");
+                this.default = "airfail";
+            } else {
+                this.f = 0;
+                this.anim = this.default;
+            }
         }
     }
 
-    if (this.anim != "slide") {
+    if (this.anim != "slide" && this.anim != "rebound") {
         this.offset.x = 0;
     }
 

@@ -1,8 +1,8 @@
 var logicalWidth = 12 * 16;
 var logicalHeight = 288;
 
-var leftVel = 0.25;
-var rightVel = -0.25;
+var leftVel = 0;
+var rightVel = -0;
 var leftX = 16;
 var rightX = 16;
 
@@ -68,7 +68,6 @@ function resizeHandler() {
 };
 
 function loadLevel() {
-    console.log("h",currentLevel);
     var level = levels[currentLevel];
     var startX = 100;
     var startY = 200;
@@ -118,14 +117,13 @@ function loadLevel() {
             entities.push(door);
         }
     }
-    console.log("h2",currentLevel);
 }
 
 function start() {
     leftX = 16;
     rightX = 16;
-    leftVel = 0.25;
-    rightVel = -0.25;
+    leftVel = 0;
+    rightVel = 0;
 
     mainContainer.removeChildren();
     entities.length = 0;
@@ -167,8 +165,7 @@ function init() {
   window.addEventListener('resize', resizeHandler, false);
   resizeHandler();
   
-  PIXI.loader.add('bunny', 'test.png')
-             .add('pact', 'pact.png')
+  PIXI.loader.add('pact', 'pact.png')
              .add('tiles', 'tiles.png').load(function (loader, res) {
       resources = res;
 
