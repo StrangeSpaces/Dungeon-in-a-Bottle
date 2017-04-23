@@ -24,8 +24,9 @@ Vec.prototype.setLength = function(target) {
 }
 
 function Entity(file) {
-    this.pos = new Vec(200, 200);
+    this.pos = new Vec(100, 200);
     this.vel = new Vec(0, 0);
+    this.offset = new Vec(0, 0);
 
     this.height = 0;
 
@@ -36,8 +37,8 @@ function Entity(file) {
 }
 
 Entity.prototype.updateGraphics = function() {
-    this.sprite.position.x = this.pos.x;
-    this.sprite.position.y = this.pos.y;
+    this.sprite.position.x = this.pos.x + this.offset.x;
+    this.sprite.position.y = this.pos.y + this.offset.y;
     this.sprite.texture.frame = this.frame;
 }
 

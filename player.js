@@ -4,9 +4,6 @@ Player.prototype.parent = Entity.prototype;
 function Player() {
     Entity.call(this, 'pact');
 
-    this.frame.width = 32;
-    this.frame.height = 32;
-
     this.f = 0;
     this.counter = 0;
     this.anim = "idle";
@@ -18,7 +15,12 @@ function Player() {
         "jump":[12, 12],
         "up":[13,14],
         "down":[15,16],
+        "slide":[18],
     }
+
+    this.frame.width = 32;
+    this.frame.height = 32;
+    this.updateGraphics();
 
     this.acc = 0.3;
     this.friction = {
@@ -32,7 +34,9 @@ function Player() {
     this.sprite.anchor.x = 0.5;
     this.sprite.anchor.y = 0.5;
 
-    this.size = new Vec(7, 16);
+    this.size = new Vec(7, 13);
+    this.offset.y = -3;
+
     this.onGround = false;
     this.leftWall = false;
     this.rightWall = false;
@@ -85,12 +89,14 @@ Player.prototype.collide = function(leftOrRight) {
 
 Player.prototype.onCollide = function(leftOrRight) {
     if (leftOrRight) {
-        if (this.leftWall && this.rightWall) start();
-        // if (this.leftWall) {
-        //     this.vel.x = Math.max(this.vel.x, leftVel);
-        // } else {
-        //     this.vel.x = Math.min(this.vel.x, rightVel);
-        // }
+        if (this.leftWall && this.rightWall) {
+            
+        }
+        if (this.leftWall) {
+            this.vel.x = Math.max(this.vel.x, leftVel);
+        } else {
+            this.vel.x = Math.min(this.vel.x, rightVel);
+        }
     } else {
         this.vel.y = 0;
         this.onGround = true;
@@ -110,15 +116,22 @@ Player.prototype.playAnim = function(anim) {
 Player.prototype.update = function() {
     if (Math.abs(this.vel.x) <= this.friction[this.onGround]) {
         this.vel.x = 0;
-        if (this.onGround) {
-            this.playAnim("idle");
-            this.default = "idle";
-        }
     } else {
         this.vel.x -= Math.sign(this.vel.x) * this.friction[this.onGround];
-        if (this.onGround) {
+    }
+
+    if (this.onGround) {
+        if (Key.isDown(Key.LEFT) || Key.isDown(Key.RIGHT)) {
+            if (Key.isDown(Key.LEFT)) {
+                this.sprite.scale.x = -1;
+            } else {
+                this.sprite.scale.x = 1;
+            }
             this.playAnim("run");
             this.default = "run";
+        } else {
+            this.playAnim("idle");
+            this.default = "idle";
         }
     }
 
@@ -129,7 +142,6 @@ Player.prototype.update = function() {
 
             if (this.onGround) {
                 this.vel.y = -this.jumpAmount;
-                console.log("jump");
             } else if (this.leftWall) {
                 this.vel.y = -this.jumpAmount * 0.9;
                 this.vel.x = this.maxSpeed;
@@ -145,7 +157,7 @@ Player.prototype.update = function() {
         this.letGo = false;
     } else {
         this.letGo = true;
-        // if (this.vel.y < 0) this.vel.y *= 0.25;
+        if (this.vel.y < 0) this.vel.y *= 0.5;
     }
 
     if (Key.isDown(Key.LEFT) && this.leftLock <= 0) this.vel.x -= this.acc;
@@ -165,10 +177,23 @@ Player.prototype.update = function() {
     this.leftLock--;
     this.rightLock--;
 
-    this.vel.y += this.gravity;
-    if (!this.onGround && this.vel.y > 0) {
-        this.playAnim("down");
-        this.default = "down";
+    if ((this.leftWall || this.rightWall) && !this.onGround && this.vel.y >= 0) {
+        this.vel.y += this.gravity / 2;
+        this.playAnim("slide");
+        this.default = "slide";
+        if (this.leftWall) {
+            this.sprite.scale.x = 1;
+            this.offset.x = -2;
+        } else {
+            this.sprite.scale.x = -1;
+            this.offset.x = 2;
+        }
+    } else {
+        this.vel.y += this.gravity;
+        if (!this.onGround && this.vel.y > 0) {
+            this.playAnim("down");
+            this.default = "down";
+        }
     }
 
     this.onGround = false;
@@ -197,10 +222,8 @@ Player.prototype.updateGraphics = function() {
         }
     }
 
-    if (this.vel.x < 0) {
-        this.sprite.scale.x = -1;
-    } else if (this.vel.x > 0) {
-        this.sprite.scale.x = 1;
+    if (this.anim != "slide") {
+        this.offset.x = 0;
     }
 
     var frame = this.anims[this.anim][this.f];

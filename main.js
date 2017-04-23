@@ -1,5 +1,5 @@
-var logicalWidth = 320;
-var logicalHeight = 240;
+var logicalWidth = 160;
+var logicalHeight = 288;
 
 var leftVel = 0.25;
 var rightVel = -0.25;
@@ -52,32 +52,64 @@ function resizeHandler() {
   mainContainer.scale.set(scaleFactor); 
 };
 
+function loadLevel() {
+    console.error("start");
+    for (var u = level.layers.length - 1; u >= 0; u--) {
+        var offset = 0;
+        var side;
+        if (u == 0) {
+            offset = 9;
+            side = 'right';
+        } else if (u == 1) {
+            offset = -9;
+            side = 'left';
+        }
+
+        for (var i = 0; i < level.layers[u].data.length; i++) {
+            var tile = level.layers[u].data[i];
+            if (tile > 0) {
+                var t = new Tile(i % 10 + offset, Math.floor(i / 10), side);
+                t.setTile(tile - 1);
+                if (u != 3) {
+                    entities.push(t);
+                }
+            }
+        }
+    }
+}
+
 function start() {
+    leftVel = 0.25;
+    rightVel = -0.25;
+
     mainContainer.removeChildren();
     entities.length = 0;
     entities.push(new Player());
 
-    for (x=0;x<20;x++) {
-        for (y=0;y<15;y++) {
-            if (y >= 14 && x != 0 && x != 19) {
-                entities.push(new Tile(x, y));
-            }
-            if (x == 0) {
-                entities.push(new Tile(x, y, 'left'));
-            }
-            if (x == 19) {
-                entities.push(new Tile(x, y, 'right'));
-            }
-        }
-    }
+    loadLevel();
 
-    entities.push(new Spike(18, 10, 'right'))
+    // for (x=0;x<20;x++) {
+    //     for (y=0;y<15;y++) {
+    //         if (y >= 14 && x != 0 && x != 19) {
+    //             entities.push(new Tile(x, y));
+    //         }
+    //         if (x == 0) {
+    //             entities.push(new Tile(x, y, 'left'));
+    //         }
+    //         if (x == 19) {
+    //             entities.push(new Tile(x, y, 'right'));
+    //         }
+    //     }
+    // }
+
+    // entities.push(new Tile(18, 10, 'right'))
 };
 
 function init() {
   renderer = PIXI.autoDetectRenderer(logicalWidth, logicalHeight, {
     roundPixels: true,
-    resolution: window.devicePixelRatio || 1
+    resolution: window.devicePixelRatio || 1,
+    backgroundColor: 0x350902,
   });
   renderer.view.id = 'pixi-canvas';
   
@@ -91,10 +123,9 @@ function init() {
   window.addEventListener('resize', resizeHandler, false);
   resizeHandler();
   
-  renderer.backgroundColor = 0xFFFFFF;
-  
   PIXI.loader.add('bunny', 'test.png')
-             .add('pact', 'pact.png').load(function (loader, res) {
+             .add('pact', 'pact.png')
+             .add('tiles', 'tiles.png').load(function (loader, res) {
       resources = res;
 
       start();
