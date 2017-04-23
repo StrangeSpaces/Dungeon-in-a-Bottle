@@ -1,8 +1,8 @@
 var logicalWidth = 12 * 16;
 var logicalHeight = 288;
 
-var leftVel = 0;
-var rightVel = -0;
+var leftVel = -0.5;
+var rightVel = 0.5;
 var leftX = 16;
 var rightX = 16;
 
@@ -102,8 +102,8 @@ function loadLevel() {
                     door = t;
                 }
                 if (tile == 11) {
-                    startX = t.pos.x + 16;
-                    startY = t.pos.y;
+                    startX = t.pos.x + 8;
+                    startY = t.pos.y + 8;
                 }
             }
         }
@@ -112,6 +112,7 @@ function loadLevel() {
             var p = new Player();
             p.pos.x = startX || t.pos.x;
             p.pos.y = startY || t.pos.y;
+            p.updateGraphics();
 
             entities.push(p);
             entities.push(door);
@@ -122,8 +123,8 @@ function loadLevel() {
 function start() {
     leftX = 16;
     rightX = 16;
-    leftVel = 0;
-    rightVel = 0;
+    leftVel = -0.5;
+    rightVel = 0.5;
 
     mainContainer.removeChildren();
     entities.length = 0;
