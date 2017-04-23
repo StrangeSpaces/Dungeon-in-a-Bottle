@@ -21,7 +21,8 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (leftX + rightX >= 12 * 16) {
-        leftVel = rightVel = 0;
+        leftVel = Math.min(leftVel, 0);
+        rightVel = Math.max(rightVel, 0);
     } else {
         if (leftVel < 0.25) {
             leftVel += 0.01;
@@ -40,6 +41,9 @@ function animate() {
 
     leftX += leftVel;
     rightX -= rightVel;
+
+    if (leftX < 16) leftX = 16;
+    if (rightX < 16) rightX = 16;
 
     for (var i = entities.length - 1; i >= 0; i--) {
         entities[i].update();
@@ -64,6 +68,7 @@ function resizeHandler() {
 };
 
 function loadLevel() {
+    console.log("h",currentLevel);
     var level = levels[currentLevel];
     var startX = 100;
     var startY = 200;
@@ -113,6 +118,7 @@ function loadLevel() {
             entities.push(door);
         }
     }
+    console.log("h2",currentLevel);
 }
 
 function start() {

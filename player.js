@@ -44,6 +44,8 @@ function Player() {
     this.rightLock = 0;
 
     this.letGo = false;
+
+    this.won = false;
 };
 
 Player.prototype.collide = function(leftOrRight) {
@@ -59,8 +61,10 @@ Player.prototype.collide = function(leftOrRight) {
                 start();
                 return
             }
-            if (ent.type == 'door') {
+            if (ent.type == 'door' && !this.won) {
+                this.won = true;
                 currentLevel++;
+                console.log(currentLevel);
                 start();
                 return
             }
