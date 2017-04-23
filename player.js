@@ -55,7 +55,15 @@ Player.prototype.collide = function(leftOrRight) {
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
-            if (ent.type == 'spike') start();
+            if (ent.type == 'spike') {
+                start();
+                return
+            }
+            if (ent.type == 'door') {
+                currentLevel++;
+                start();
+                return
+            }
 
             if (leftOrRight) {
                 if (this.pos.x - ent.pos.x > 0) {

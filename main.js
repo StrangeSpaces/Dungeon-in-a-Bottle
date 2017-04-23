@@ -14,6 +14,8 @@ var resources = null;
 
 var entities = [];
 
+var currentLevel = 0;
+
 function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
@@ -62,9 +64,11 @@ function resizeHandler() {
 };
 
 function loadLevel() {
-    var level = levels[2];
-    var startX;
-    var startY;
+    var level = levels[currentLevel];
+    var startX = 100;
+    var startY = 200;
+    var door;
+
     for (var u = level.layers.length - 1; u >= 0; u--) {
         var offset = -3;
         var side;
@@ -89,6 +93,9 @@ function loadLevel() {
 
                 if (u != 3) {
                     entities.push(t);
+                } else if ([7,8,21,22,35,36].indexOf(tile) != -1) {
+                    t.type = 'door';
+                    door = t;
                 }
                 if (tile == 11) {
                     startX = t.pos.x + 16;
@@ -103,6 +110,7 @@ function loadLevel() {
             p.pos.y = startY || t.pos.y;
 
             entities.push(p);
+            entities.push(door);
         }
     }
 }
