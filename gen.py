@@ -4,8 +4,10 @@ os.chdir('levels')
 
 final = 'levels = [\n'
 
-for filename in os.listdir(os.getcwd()):
-    with open(filename) as f:
+files = os.listdir(os.getcwd())
+
+for i in xrange(len(files)):
+    with open('CompactLevel{}.json'.format(i+1)) as f:
         final += ''.join(f.readlines())
     final += ','
 
