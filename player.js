@@ -34,7 +34,10 @@ function Player() {
         true: 0.1,
         false: 0.02
     };
-    this.maxSpeed = 2;
+    this.maxSpeed = {
+        true: 3,
+        false: 2
+    };
     this.jumpAmount = 4;
     this.gravity = 0.15;
 
@@ -202,7 +205,7 @@ Player.prototype.update = function() {
                     this.default = "up";
                 } else if (this.leftWall) {
                     this.vel.y = -this.jumpAmount * 0.9;
-                    this.vel.x = this.maxSpeed;
+                    this.vel.x = this.maxSpeed[this.anim == "rejump"];
                     this.leftLock = 20;
                     if (this.pushLeft) leftVel = -0.5;
 
@@ -210,7 +213,7 @@ Player.prototype.update = function() {
                     this.default = "up";
                 } else if (this.rightWall) {
                     this.vel.y = -this.jumpAmount * 0.9;
-                    this.vel.x = -this.maxSpeed;
+                    this.vel.x = -this.maxSpeed[this.anim == "rejump"];
                     this.rightLock = 20;
                     if (this.pushRight) rightVel = 0.5;
 
@@ -238,10 +241,10 @@ Player.prototype.update = function() {
         this.d = true;
     }
 
-    if (this.vel.x < -this.maxSpeed) {
-        this.vel.x = -this.maxSpeed;
-    } else if (this.vel.x > this.maxSpeed) {
-        this.vel.x = this.maxSpeed;
+    if (this.vel.x < -this.maxSpeed[this.anim == "rejump"]) {
+        this.vel.x = -this.maxSpeed[this.anim == "rejump"];
+    } else if (this.vel.x > this.maxSpeed[this.anim == "rejump"]) {
+        this.vel.x = this.maxSpeed[this.anim == "rejump"];
     }
 
     this.leftLock--;
@@ -309,17 +312,17 @@ Player.prototype.updateGraphics = function() {
         if (this.anims[this.anim].length <= this.f) {
             if (this.anim == "rebound") {
                 this.playAnim("rejump");
-                this.default = "rejump";
+                this.default = "up";
 
                 if (this.leftWall) {
                     this.vel.y = -this.jumpAmount * 1.2;
-                    this.vel.x = this.maxSpeed;
-                    this.leftLock = 20;
+                    this.vel.x = this.maxSpeed[this.anim == "rejump"];
+                    this.leftLock = 25;
                     if (this.pushLeft) leftVel = -0.5;
                 } else {
                     this.vel.y = -this.jumpAmount * 1.2;
-                    this.vel.x = -this.maxSpeed;
-                    this.rightLock = 20;
+                    this.vel.x = -this.maxSpeed[this.anim == "rejump"];
+                    this.rightLock = 25;
                     if (this.pushRight) rightVel = 0.5;
                 }
 
