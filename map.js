@@ -6,10 +6,12 @@ function Tile(x, y, side) {
 
     this.type = 'tile';
 
-    this.pos.x = x * 16;
-    this.pos.y = y * 16;
+    this.pos.x = x * 16 + 8;
+    this.pos.y = y * 16 + 8;
 
     this.startX = this.pos.x;
+
+    this.size = new Vec(8, 8);
 
     if (side == 'left') {
         this.left = true;
@@ -51,6 +53,8 @@ function Spike(x, y, side) {
     Tile.call(this, x, y, side);
 
     this.type = 'spike';
+    this.size.x = 7;
+    this.size.y = 7;
 }
 
 Spike.prototype.update = function() {

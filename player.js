@@ -31,9 +31,6 @@ function Player() {
     this.jumpAmount = 4;
     this.gravity = 0.15;
 
-    this.sprite.anchor.x = 0.5;
-    this.sprite.anchor.y = 0.5;
-
     this.size = new Vec(7, 13);
     this.offset.y = -3;
 
@@ -53,28 +50,28 @@ Player.prototype.collide = function(leftOrRight) {
     for (var i = entities.length - 1; i >= 1; i--) {
         var ent = entities[i];
         var c = 0;
-        while (this.pos.x - this.size.x < ent.pos.x+16 &&
-            this.pos.x + this.size.x > ent.pos.x &&
-            this.pos.y - this.size.y < ent.pos.y+16 &&
-            this.pos.y + this.size.y > ent.pos.y) {
+        while (this.pos.x - this.size.x < ent.pos.x+ent.size.x &&
+            this.pos.x + this.size.x > ent.pos.x-ent.size.x &&
+            this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
+            this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
             if (ent.type == 'spike') start();
 
             if (leftOrRight) {
-                if (this.pos.x - (ent.pos.x + 8) > 0) {
-                    this.pos.x = ent.pos.x + 16.0001 + this.size.x;
+                if (this.pos.x - ent.pos.x > 0) {
+                    this.pos.x = ent.pos.x + ent.size.x + 0.0001 + this.size.x;
                     this.leftWall = true;
                     if (ent.left) this.pushLeft = true;
                 } else {
-                    this.pos.x = ent.pos.x - this.size.x;
+                    this.pos.x = ent.pos.x - ent.size.x - this.size.x;
                     this.rightWall = true;
                     if (ent.right) this.pushRight = true;
                 }
             } else {
-                if (this.pos.y - (ent.pos.y + 8) > 0) {
-                    this.pos.y = ent.pos.y + 16 + this.size.y;
+                if (this.pos.y - ent.pos.y > 0) {
+                    this.pos.y = ent.pos.y + ent.size.y + this.size.y;
                 } else {
-                    this.pos.y = ent.pos.y - this.size.y;
+                    this.pos.y = ent.pos.y - ent.size.y - this.size.y;
                 }
             }
 

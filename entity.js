@@ -31,7 +31,10 @@ function Entity(file) {
     this.height = 0;
 
     this.frame = new PIXI.Rectangle(0, 0, 16, 16);
-    this.sprite = new PIXI.Sprite(new PIXI.Texture(resources[file || 'bunny'].texture, this.frame)); 
+    this.sprite = new PIXI.Sprite(new PIXI.Texture(resources[file || 'bunny'].texture, this.frame));
+
+    this.sprite.anchor.x = 0.5;
+    this.sprite.anchor.y = 0.5;
 
     mainContainer.addChild(this.sprite);
 }
