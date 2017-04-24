@@ -260,7 +260,8 @@ Player.prototype.update = function() {
 
     if (this.deadCount > 0) {
         this.deadCount--;
-        if (this.deadCount <= 0) {
+        if (this.deadCount <= 1) {
+            if (this.anim == "squash") close.play();
             start();
             this.sprite.visible = false;
         }
