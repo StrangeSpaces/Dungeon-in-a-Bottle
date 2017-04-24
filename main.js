@@ -52,14 +52,14 @@ function animate() {
         }
     }
 
-    if (Math.abs(leftVel) > 0.15 || Math.abs(rightVel) > 0.15) {
-        if (!wallid) {
-            wallid = wall.play();
-        }
-    } else {
-        wall.pause();
-        wallid = null;
-    }
+    // if (Math.abs(leftVel) > 0.15 || Math.abs(rightVel) > 0.15) {
+    //     if (!wallid) {
+    //         wallid = wall.play();
+    //     }
+    // } else {
+    //     wall.pause();
+    //     wallid = null;
+    // }
 
     for (var i = entities.length - 1; i >= 0; i--) {
         entities[i].update();
