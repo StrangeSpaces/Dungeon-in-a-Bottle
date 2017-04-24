@@ -14,7 +14,7 @@ var resources = null;
 
 var entities = [];
 
-var currentLevel = 0;
+var currentLevel = 7;
 
 function animate() {
     // start the timer for the next animation loop
@@ -90,10 +90,12 @@ function loadLevel() {
                 var t;
                 if ([42, 43, 44, 45].indexOf(tile) != -1) {
                     t = new Spike(i % 18 + offset, Math.floor(i / 18), side);
+                } else if ([78,79,92,93].indexOf(tile) != -1) {
+                    t = new Torch(i % 18 + offset, Math.floor(i / 18), side);
+                    door.push(t);
                 } else {
                     t = new Tile(i % 18 + offset, Math.floor(i / 18), side);
                 }
-                console.log(tile);
                 t.setTile(tile);
 
                 if (u != 3) {

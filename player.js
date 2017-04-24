@@ -81,7 +81,7 @@ Player.prototype.collide = function(leftOrRight) {
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
-            if (ent.type == 'enter') {
+            if (ent.type == 'enter' || ent.type == 'torch') {
                 break;
             }
 

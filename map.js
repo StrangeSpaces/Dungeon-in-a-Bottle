@@ -61,3 +61,26 @@ function Spike(x, y, side) {
 Spike.prototype.update = function() {
     Tile.prototype.update.call(this);
 };
+
+Torch.prototype = Object.create(Tile.prototype);
+Torch.prototype.parent = Tile.prototype;
+function Torch(x, y, side) {
+    Tile.call(this, x, y, side);
+
+    this.type = 'torch';
+    this.counter = 0;
+}
+
+Torch.prototype.update = function() {
+    this.counter++;
+    if (this.counter % 6 == 0) {
+        if (this.counter % 24 == 0) {
+            this.setTile(this.tile - 32);
+        } else if (this.counter % 24 == 18) {
+            this.setTile(this.tile + 28);
+        } else {
+            this.setTile(this.tile + 2);
+        }
+    }
+    Tile.prototype.update.call(this);
+};
