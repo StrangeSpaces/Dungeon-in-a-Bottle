@@ -61,19 +61,6 @@
          "tilecount":154,
          "tileheight":16,
          "tilewidth":16
-        }, 
-        {
-         "columns":14,
-         "firstgid":155,
-         "image":"CompactTiles.png",
-         "imageheight":176,
-         "imagewidth":224,
-         "margin":0,
-         "name":"CompactTiles",
-         "spacing":0,
-         "tilecount":154,
-         "tileheight":16,
-         "tilewidth":16
         }],
  "tilewidth":16,
  "version":1,
