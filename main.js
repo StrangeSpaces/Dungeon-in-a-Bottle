@@ -15,7 +15,7 @@ var resources = null;
 
 var entities = [];
 
-var currentLevel = 15;
+var currentLevel = 0;
 
 function animate() {
     // start the timer for the next animation loop
@@ -86,8 +86,8 @@ function resizeHandler() {
 
 function loadLevel() {
     var level = levels[currentLevel];
-    var startX = 50;
-    var startY = 200;
+    var startX = 6 * 16;
+    var startY = -10;
     var door = [];
 
     leftEnts.length = 0;
@@ -171,6 +171,10 @@ function loadLevel() {
             }
         }
     }
+
+    if (currentLevel == 0) {
+        entities.push(new Money(new Vec(100, 15.5 * 16)));
+    }
 }
 
 function start() {
@@ -206,7 +210,8 @@ function init() {
   
   PIXI.loader.add('pact', 'pact.png')
              .add('tiles', 'tiles.png')
-             .add('coin', 'coin.png').load(function (loader, res) {
+             .add('coin', 'coin.png')
+             .add('money', 'TreasureSheet.png').load(function (loader, res) {
       resources = res;
 
       start();

@@ -37,3 +37,22 @@ Coin.prototype.updateGraphics = function() {
 
     Entity.prototype.updateGraphics.call(this);
 }
+
+Money.prototype = Object.create(Entity.prototype);
+Money.prototype.parent = Entity.prototype;
+
+function Money(pos, vel) {
+    Entity.call(this, 'money');
+
+    this.type = 'money';
+
+    this.pos.x = pos.x;
+    this.pos.y = pos.y;
+
+    this.size = new Vec(28, 8);
+
+    this.frame.width = 64;
+
+    this.updateGraphics();
+}
+

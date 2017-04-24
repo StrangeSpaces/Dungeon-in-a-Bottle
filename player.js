@@ -71,7 +71,7 @@ Player.prototype.makeCoin = function() {
     if (this.anim != "idle" && Math.random() < 0.01) {
         this.coins.push(new Coin(this.pos, this.vel));
         clink.rate(1 + ((Math.random()-0.5)*2) / 20);
-        clink.play()
+        clink.play();
     }
 }
 
@@ -93,20 +93,26 @@ Player.prototype.collide = function(leftOrRight) {
     for (var i = entities.length - 1; i >= 1; i--) {
         var ent = entities[i];
         var c = 0;
+
+        if (ent.type == 'enter' || ent.type == 'torch') {
+            continue;
+        }
+
         while (this.pos.x - this.size.x < ent.pos.x+ent.size.x &&
             this.pos.x + this.size.x > ent.pos.x-ent.size.x &&
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
-            if (ent.type == 'enter' || ent.type == 'torch') {
-                break;
+            if (ent.type == 'money') {
+                this.coins.push(new Coin(this.pos, this.vel));
+                clink.rate(1 + ((Math.random()-0.5)*2) / 20);
+                clink.play();
             }
 
             if (ent.type == 'spike') {
                 var r = ent.tile;
                 r -= 42;
 
-                console.log(r)
                 if (r == 0) {
 
                 } else if (r == 1) {
