@@ -177,7 +177,8 @@ function init() {
   resizeHandler();
   
   PIXI.loader.add('pact', 'pact.png')
-             .add('tiles', 'tiles.png').load(function (loader, res) {
+             .add('tiles', 'tiles.png')
+             .add('coin', 'coin.png').load(function (loader, res) {
       resources = res;
 
       start();

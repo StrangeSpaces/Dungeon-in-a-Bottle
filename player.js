@@ -59,7 +59,15 @@ function Player() {
     this.won = false;
     this.resCount = 0;
     this.startCount = 18;
+
+    this.coins = [];
 };
+
+Player.prototype.makeCoin = function() {
+    if (this.anim != "idle" && Math.random() < 0.02) {
+        this.coins.push(new Coin(this.pos, this.vel));
+    }
+}
 
 Player.prototype.win = function() {
     this.won = true;
@@ -195,6 +203,11 @@ Player.prototype.fall = function() {
 }
 
 Player.prototype.update = function() {
+    this.makeCoin();
+    for (var i = this.coins.length - 1; i >= 0; i--) {
+        this.coins[i].update();
+    }
+
     if (this.startCount > 0) {
         this.startCount--;
         if (this.startCount <= 0) {
