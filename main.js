@@ -3,8 +3,9 @@ var logicalHeight = 288;
 
 var leftVel = -0.5;
 var rightVel = 0.5;
-var leftX = 16;
-var rightX = 16;
+
+var leftEnts = [];
+var rightEnts = [];
 
 var renderer = null;
 var stage = null;
@@ -14,13 +15,27 @@ var resources = null;
 
 var entities = [];
 
-var currentLevel = 7;
+var currentLevel = 0;
 
 function animate() {
     // start the timer for the next animation loop
     requestAnimationFrame(animate);
 
-    if (leftX + rightX >= 12 * 16) {
+    var bump = false;
+
+    for (var i = leftEnts.length - 1; i >= 0; i--) {
+        var lx = leftEnts[i] ? leftEnts[i].pos.x : -100;
+        var rx = rightEnts[i] ? rightEnts[i].pos.x : 1000;
+
+        console
+
+        if (lx - rx >= -16) {
+            bump = true;
+            break;
+        }
+    }
+
+    if (bump) {
         leftVel = Math.min(leftVel, 0);
         rightVel = Math.max(rightVel, 0);
     } else {
@@ -38,12 +53,6 @@ function animate() {
             rightVel = -0.25;
         }
     }
-
-    leftX += leftVel;
-    rightX -= rightVel;
-
-    if (leftX < 16) leftX = 16;
-    if (rightX < 16) rightX = 16;
 
     for (var i = entities.length - 1; i >= 0; i--) {
         entities[i].update();
@@ -72,6 +81,12 @@ function loadLevel() {
     var startX = 50;
     var startY = 200;
     var door = [];
+
+    leftEnts.length = 0;
+    rightEnts.length = 0;
+
+    var l = null;
+    var r = null;
 
     for (var u = level.layers.length - 1; u >= 0; u--) {
         var offset = -3;
@@ -113,6 +128,22 @@ function loadLevel() {
                     startX = t.pos.x + 8;
                     startY = t.pos.y + 26;
                 }
+
+                if (side == 'left' && (!l || t.pos.x > l.pos.x)) {
+                    l = t;
+                } else if (side == 'right' && (!r || t.pos.x < r.pos.x)) {
+                    r = t;
+                } 
+            }
+
+            if ((i+1) % 18 == 0) {
+                if (side == 'left') {
+                    leftEnts.push(l);
+                } else if (side == 'right') {
+                    rightEnts.push(r);
+                }
+                l = null;
+                r = null;
             }
         }
 
@@ -131,8 +162,6 @@ function loadLevel() {
 }
 
 function start() {
-    leftX = 16;
-    rightX = 16;
     leftVel = -0.5;
     rightVel = 0.5;
 
