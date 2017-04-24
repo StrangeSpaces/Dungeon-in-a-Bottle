@@ -36,7 +36,8 @@ function Entity(file) {
     this.sprite.anchor.x = 0.5;
     this.sprite.anchor.y = 0.5;
 
-    mainContainer.addChild(this.sprite);
+    currentContainer.addChild(this.sprite);
+    this.con = currentContainer;
 }
 
 Entity.prototype.updateGraphics = function() {

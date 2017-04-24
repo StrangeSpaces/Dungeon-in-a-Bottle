@@ -23,7 +23,8 @@ function Player() {
         "airfail": [22, 23],
         "wallfail": [30, 31],
         "getup": [32, 33, 34, 35],
-        "squash": [42,43,44,45]
+        "spike": [36,37,38,39,40,41],
+        "squash": [42,43,44,45],
     }
 
     this.sprite.visible = false;
@@ -102,7 +103,31 @@ Player.prototype.collide = function(leftOrRight) {
             }
 
             if (ent.type == 'spike') {
-                start();
+                var r = ent.tile;
+                r -= 42;
+
+                console.log(r)
+                if (r == 0) {
+
+                } else if (r == 1) {
+                    this.sprite.rotation = Math.PI / 4;
+                    this.sprite.scale.x = 1;
+                } else if (r == 2) {
+                    this.sprite.rotation = Math.PI;
+                } else {
+                    this.sprite.rotation = -Math.PI / 4;
+                    this.sprite.scale.x = -1;
+                }
+
+                this.deadEnt = ent;
+                this.pos.x = this.deadEnt.pos.x;
+                this.pos.y = this.deadEnt.pos.y;
+                this.playAnim("spike");
+
+                mainContainer.removeChild(this.sprite);
+                ent.con.addChild(this.sprite);
+
+                this.deadCount = 36;
                 return
             }
             if (ent.type == 'door' && !this.won) {
@@ -238,6 +263,10 @@ Player.prototype.update = function() {
         if (this.deadCount <= 0) {
             start();
             this.sprite.visible = false;
+        }
+        if (this.deadEnt) {
+            this.pos.x = this.deadEnt.pos.x;
+            this.pos.y = this.deadEnt.pos.y;
         }
         this.updateGraphics();
         return;

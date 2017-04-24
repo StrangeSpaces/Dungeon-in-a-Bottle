@@ -15,7 +15,7 @@ var resources = null;
 
 var entities = [];
 
-var currentLevel = 0;
+var currentLevel = 4;
 
 function animate() {
     // start the timer for the next animation loop
@@ -81,6 +81,7 @@ function resizeHandler() {
 
   renderer.resize(newWidth, newHeight);
   mainContainer.scale.set(scaleFactor); 
+  upperContainer.scale.set(scaleFactor);
 };
 
 function loadLevel() {
@@ -95,15 +96,19 @@ function loadLevel() {
     var l = null;
     var r = null;
 
+    currentContainer = mainContainer;
+
     for (var u = level.layers.length - 1; u >= 0; u--) {
         var offset = -3;
         var side;
         if (u == 0) {
             offset = 2;
             side = 'right';
+            currentContainer = upperContainer;
         } else if (u == 1) {
             offset = -8;
             side = 'left';
+            currentContainer = upperContainer;
         }
 
         for (var i = 0; i < level.layers[u].data.length; i++) {
@@ -173,6 +178,7 @@ function start() {
     rightVel = 0.5;
 
     mainContainer.removeChildren();
+    upperContainer.removeChildren();
     entities.length = 0;
 
     loadLevel();
@@ -190,7 +196,9 @@ function init() {
   
   stage = new PIXI.Container();
   mainContainer = new PIXI.Container();
+  upperContainer = new PIXI.Container()
   stage.addChild(mainContainer);
+  stage.addChild(upperContainer);
   
   document.body.appendChild(renderer.view);
   window.addEventListener('resize', resizeHandler, false);
