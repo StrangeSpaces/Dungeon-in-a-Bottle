@@ -202,6 +202,12 @@ Player.prototype.fall = function() {
     }
 }
 
+Player.prototype.jump = function() {
+    this.default = "up";
+    jump.rate(1 + ((Math.random()-0.5)*2) / 10);
+    jump.play();
+}
+
 Player.prototype.update = function() {
     this.makeCoin();
     for (var i = this.coins.length - 1; i >= 0; i--) {
@@ -277,7 +283,7 @@ Player.prototype.update = function() {
                     this.vel.y = -this.jumpAmount;
 
                     this.playAnim("up");
-                    this.default = "up";
+                    this.jump();
                 } else if (this.leftWall) {
                     this.vel.y = -this.jumpAmount * 0.9;
                     this.vel.x = this.maxSpeed[this.anim == "rejump"];
@@ -285,7 +291,7 @@ Player.prototype.update = function() {
                     if (this.pushLeft) leftVel = -0.5;
 
                     this.playAnim("walljump");
-                    this.default = "up";
+                    this.jump();
                 } else if (this.rightWall) {
                     this.vel.y = -this.jumpAmount * 0.9;
                     this.vel.x = -this.maxSpeed[this.anim == "rejump"];
@@ -293,7 +299,7 @@ Player.prototype.update = function() {
                     if (this.pushRight) rightVel = 0.5;
 
                     this.playAnim("walljump");
-                    this.default = "up";
+                    this.jump();
                 } else {
                     this.playAnim("super");
                 }
@@ -392,7 +398,6 @@ Player.prototype.updateGraphics = function() {
         if (this.anims[this.anim].length <= this.f) {
             if (this.anim == "rebound") {
                 this.playAnim("rejump");
-                this.default = "up";
 
                 if (this.leftWall) {
                     this.vel.y = -this.jumpAmount * 1.2;
@@ -406,6 +411,7 @@ Player.prototype.updateGraphics = function() {
                     if (this.pushRight) rightVel = 0.75;
                 }
 
+                this.jump();
                 this.sprite.scale.x *= -1;
             } else if (this.anim == "super") {
                 this.playAnim("airfail");
