@@ -23,6 +23,7 @@ function Player() {
         "airfail": [22, 23],
         "wallfail": [30, 31],
         "getup": [32, 33, 34, 35],
+        "squash": [42,43,44,45]
     }
 
     this.sprite.visible = false;
@@ -59,6 +60,7 @@ function Player() {
     this.won = false;
     this.resCount = 0;
     this.startCount = 18;
+    this.deadCount = 0;
 
     this.coins = [];
     //enter.play();
@@ -85,6 +87,8 @@ Player.prototype.win = function() {
 }
 
 Player.prototype.collide = function(leftOrRight) {
+    if (this.deadCount > 0)return;
+
     for (var i = entities.length - 1; i >= 1; i--) {
         var ent = entities[i];
         var c = 0;
@@ -138,7 +142,9 @@ Player.prototype.collide = function(leftOrRight) {
 Player.prototype.onCollide = function(leftOrRight, ent) {
     if (leftOrRight) {
         if (this.leftWall && this.rightWall) {
-            start();
+            this.playAnim("squash");
+            this.deadCount = 24;
+            return;
         }
 
         if (this.anim == "rebound") {
@@ -225,6 +231,16 @@ Player.prototype.update = function() {
     this.makeCoin();
     for (var i = this.coins.length - 1; i >= 0; i--) {
         this.coins[i].update();
+    }
+
+    if (this.deadCount > 0) {
+        this.deadCount--;
+        if (this.deadCount <= 0) {
+            start();
+            this.sprite.visible = false;
+        }
+        this.updateGraphics();
+        return;
     }
 
     if (this.startCount > 0) {
