@@ -15,7 +15,7 @@ var resources = null;
 
 var entities = [];
 
-var currentLevel = 4;
+var currentLevel = 0;
 
 function animate() {
     // start the timer for the next animation loop
