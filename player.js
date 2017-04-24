@@ -61,11 +61,14 @@ function Player() {
     this.startCount = 18;
 
     this.coins = [];
+    //enter.play();
 };
 
 Player.prototype.makeCoin = function() {
     if (this.anim != "idle" && Math.random() < 0.02) {
         this.coins.push(new Coin(this.pos, this.vel));
+        clink.rate(1 + ((Math.random()-0.5)*2) / 20);
+        clink.play()
     }
 }
 
@@ -78,6 +81,7 @@ Player.prototype.win = function() {
         }
     }
     this.updateGraphics();
+    exit.play();
 }
 
 Player.prototype.collide = function(leftOrRight) {
@@ -98,7 +102,9 @@ Player.prototype.collide = function(leftOrRight) {
                 return
             }
             if (ent.type == 'door' && !this.won) {
-                if (this.onGround) this.win();
+                if (this.onGround) {
+                    this.win();
+                }
                 return
             }
 
@@ -142,6 +148,7 @@ Player.prototype.onCollide = function(leftOrRight, ent) {
                 this.vel.x = 2;
             }
         } else if (this.anim == "airfail") {
+            eatfloor.play();
             this.playAnim("wallfail");
             this.default = "wallfail";
             if (this.leftWall) {
@@ -203,10 +210,15 @@ Player.prototype.fall = function() {
     }
 }
 
-Player.prototype.jump = function() {
+Player.prototype.jump = function(isBig) {
     this.default = "up";
-    jump.rate(1 + ((Math.random()-0.5)*2) / 10);
-    jump.play();
+    if (isBig) {
+        bigjump.rate(1 + ((Math.random()-0.5)*2) / 20);
+        bigjump.play();
+    } else {
+        jump.rate(1 + ((Math.random()-0.5)*2) / 20);
+        jump.play();
+    }
 }
 
 Player.prototype.update = function() {
@@ -257,6 +269,7 @@ Player.prototype.update = function() {
 
     if (this.onGround) {
         if (this.anim == "wallfail" || this.anim == "airfail") {
+            eatfloor.play();
             this.playAnim("getup");
             this.default = "idle";
         }
@@ -417,7 +430,7 @@ Player.prototype.updateGraphics = function() {
                     if (this.pushRight) rightVel = 0.75;
                 }
 
-                this.jump();
+                this.jump(true);
                 this.sprite.scale.x *= -1;
             } else if (this.anim == "super") {
                 this.playAnim("airfail");

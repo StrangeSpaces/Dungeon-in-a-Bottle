@@ -32,9 +32,44 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.4.3/pixi.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.3/howler.min.js"></script>
 <script type="text/javascript">
+    var vol = 0.7;
     var jump = new Howl({
-      src: ['Jump.wav']
+      src: ['audio/DIABJump.wav'],
+      volume: vol,
     });
+    var bigjump = new Howl({
+      src: ['audio/DIABHyperJump.wav'],
+      volume: vol,
+    });
+    var enter = new Howl({
+      src: ['audio/DIABWalkIn.wav'],
+      volume: vol,
+    });
+    var exit = new Howl({
+      src: ['audio/DIABWalkOut.wav'],
+      volume: 0.8,
+    });
+    var eatfloor = new Howl({
+      src: ['audio/DIABEatFloor.wav'],
+      volume: vol,
+    });
+    var clink = new Howl({
+      src: ['audio/CoinDrop.wav'],
+      volume: vol,
+    });
+    var wall = new Howl({
+      src: ['audio/DIABWallRumble.wav'],
+      volume: vol,
+      loop: true,
+    });
+    var wallid;
+
+    var music = new Howl({
+      src: ['audio/DIABTheme.wav'],
+      volume: 0.5,
+      loop: true,
+    }); 
+    music.play();
 </script>
 
 <script src="input.js"></script>

@@ -24,10 +24,8 @@ function animate() {
     var bump = false;
 
     for (var i = leftEnts.length - 1; i >= 0; i--) {
-        var lx = leftEnts[i] ? leftEnts[i].pos.x : -100;
-        var rx = rightEnts[i] ? rightEnts[i].pos.x : 1000;
-
-        console
+        var lx = leftEnts[i] ? leftEnts[i].pos.x : -10000;
+        var rx = rightEnts[i] ? rightEnts[i].pos.x : 10000;
 
         if (lx - rx >= -16) {
             bump = true;
@@ -52,6 +50,15 @@ function animate() {
         if (rightVel <= -0.25) {
             rightVel = -0.25;
         }
+    }
+
+    if (Math.abs(leftVel) > 0.15 || Math.abs(rightVel) > 0.15) {
+        if (!wallid) {
+            wallid = wall.play();
+        }
+    } else {
+        wall.pause();
+        wallid = null;
     }
 
     for (var i = entities.length - 1; i >= 0; i--) {
