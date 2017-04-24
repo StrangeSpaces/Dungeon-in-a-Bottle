@@ -179,6 +179,7 @@ Player.prototype.onCollide = function(leftOrRight, ent) {
             }
         }
     } else {
+        this.standing = ent;
         this.vel.y = 0;
         this.onGround = true;
         this.leftLock = 0;
@@ -368,11 +369,16 @@ Player.prototype.update = function() {
         this.fall();
     }
 
+    if (this.standing) {
+        this.pos.x += this.standing.vel.x
+    }
+
     this.onGround = false;
     this.leftWall = false;
     this.rightWall = false;
     this.pushLeft = false;
     this.pushRight = false;
+    this.standing = null;
 
     this.pos.x += this.vel.x;
     this.collide(true);
