@@ -84,8 +84,7 @@ Player.prototype.win = function() {
     exit.play();
 }
 
-Player.prototype.collide = function(leftOrRight, spike) {
-
+Player.prototype.collide = function(leftOrRight) {
     for (var i = entities.length - 1; i >= 1; i--) {
         var ent = entities[i];
         var c = 0;
@@ -94,19 +93,14 @@ Player.prototype.collide = function(leftOrRight, spike) {
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
-            if (ent.type == 'spike') {
-                if (spike) {
-                    start();
-                    return
-                } else {
-                    break;
-                }
-            }
-
             if (ent.type == 'enter' || ent.type == 'torch') {
                 break;
             }
 
+            if (ent.type == 'spike') {
+                start();
+                return
+            }
             if (ent.type == 'door' && !this.won) {
                 if (this.onGround) {
                     this.win();
@@ -400,7 +394,7 @@ Player.prototype.update = function() {
     this.standing = null;
 
     this.pos.x += this.vel.x;
-    this.collide(true, true);
+    this.collide(true);
     this.collide(true);
 
     this.pos.y += this.vel.y;
