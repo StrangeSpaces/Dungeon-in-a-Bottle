@@ -168,7 +168,7 @@ Player.prototype.onCollide = function(leftOrRight, ent) {
     if (leftOrRight) {
         if (this.leftWall && this.rightWall) {
             this.playAnim("squash");
-            this.deadCount = 24;
+            this.deadCount = 30;
             return;
         }
 
@@ -260,8 +260,11 @@ Player.prototype.update = function() {
 
     if (this.deadCount > 0) {
         this.deadCount--;
+        if (this.deadCount <= 7 && this.anim == "squash") {
+            close.play();
+            this.sprite.visible = false;
+        }
         if (this.deadCount <= 1) {
-            if (this.anim == "squash") close.play();
             start();
             this.sprite.visible = false;
         }
