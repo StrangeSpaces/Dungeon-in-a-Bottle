@@ -104,9 +104,21 @@ Player.prototype.collide = function(leftOrRight) {
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
             if (ent.type == 'money') {
-                this.coins.push(new Coin(this.pos, this.vel));
-                clink.rate(1 + ((Math.random()-0.5)*2) / 20);
-                clink.play();
+                if (ent.sprite.visible && Math.random() < 0.08) {
+                    this.coins.push(new Coin(this.pos, this.vel));
+                    clink.rate(1 + ((Math.random()-0.5)*2) / 20);
+                    clink.play();
+                    this.t = (this.t || 0) + 1;
+                    if (this.t % 16 == 0) {
+                        if (ent.frame.x == 64 * 3) {
+                            ent.sprite.visible = false;
+                        } else {
+                            ent.frame.x += 64;
+                        }
+                        ent.updateGraphics();
+                    }
+                }
+                break;
             }
 
             if (ent.type == 'spike') {
