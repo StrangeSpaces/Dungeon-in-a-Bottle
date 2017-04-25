@@ -85,100 +85,104 @@ function resizeHandler() {
 };
 
 function loadLevel() {
-    var level = levels[currentLevel];
-    var startX = 6 * 16;
-    var startY = -10;
-    var door = [];
-
-    leftEnts.length = 0;
-    rightEnts.length = 0;
-
-    var l = null;
-    var r = null;
-
     currentContainer = mainContainer;
 
-    for (var u = level.layers.length - 1; u >= 0; u--) {
-        var offset = -3;
-        var side;
-        if (u == 0) {
-            offset = 2;
-            side = 'right';
-            currentContainer = upperContainer;
-        } else if (u == 1) {
-            offset = -8;
-            side = 'left';
-            currentContainer = upperContainer;
+    if (currentLevel != 17) {
+        var level = levels[currentLevel];
+        var startX = 6 * 16;
+        var startY = -10;
+        var door = [];
+
+        leftEnts.length = 0;
+        rightEnts.length = 0;
+
+        var l = null;
+        var r = null;
+
+        for (var u = level.layers.length - 1; u >= 0; u--) {
+            var offset = -3;
+            var side;
+            if (u == 0) {
+                offset = 2;
+                side = 'right';
+                currentContainer = upperContainer;
+            } else if (u == 1) {
+                offset = -8;
+                side = 'left';
+                currentContainer = upperContainer;
+            }
+
+            for (var i = 0; i < level.layers[u].data.length; i++) {
+                var tile = level.layers[u].data[i] - 1;
+                if (tile >= 0) {
+                    var t;
+                    if ([42, 43, 44, 45].indexOf(tile) != -1) {
+                        t = new Spike(i % 18 + offset, Math.floor(i / 18), side);
+                    } else if ([78,79,92,93].indexOf(tile) != -1) {
+                        t = new Torch(i % 18 + offset, Math.floor(i / 18), side);
+                        door.push(t);
+                    } else {
+                        t = new Tile(i % 18 + offset, Math.floor(i / 18), side);
+                    }
+                    t.setTile(tile);
+
+                    if (u != 3) {
+                        entities.push(t);
+                    } else if ([7,8,21,22,35,36].indexOf(tile) != -1) {
+                        t.type = 'door';
+                        t.size.x = -4;
+                        door.push(t);
+                    } else if ([7,8,21,22,35,36].indexOf(tile - 4) != -1) {
+                        t.type = 'enter';
+                        t.setTile(tile + 60 + 14 * 3);
+                        door.push(t);
+                    }
+                    if (tile == 11) {
+                        startX = t.pos.x + 8;
+                        startY = t.pos.y + 26;
+                    }
+
+                    if (side == 'left' && (!l || t.pos.x > l.pos.x)) {
+                        l = t;
+                    } else if (side == 'right' && (!r || t.pos.x < r.pos.x)) {
+                        r = t;
+                    } 
+                }
+
+                if ((i+1) % 18 == 0) {
+                    if (side == 'left') {
+                        leftEnts.push(l);
+                    } else if (side == 'right') {
+                        rightEnts.push(r);
+                    }
+                    l = null;
+                    r = null;
+                }
+            }
+
+            if (u == 3) {
+                if (currentLevel == 1) {
+                    startX = 32;
+                    startY = 200;
+                }
+                var p = new Player();
+                p.pos.x = startX || t.pos.x;
+                p.pos.y = startY || t.pos.y;
+                p.updateGraphics();
+                entities.push(p);
+
+                for (var d = door.length - 1; d >= 0; d--) {
+                    entities.push(door[d]);
+                }
+            }
         }
 
-        for (var i = 0; i < level.layers[u].data.length; i++) {
-            var tile = level.layers[u].data[i] - 1;
-            if (tile >= 0) {
-                var t;
-                if ([42, 43, 44, 45].indexOf(tile) != -1) {
-                    t = new Spike(i % 18 + offset, Math.floor(i / 18), side);
-                } else if ([78,79,92,93].indexOf(tile) != -1) {
-                    t = new Torch(i % 18 + offset, Math.floor(i / 18), side);
-                    door.push(t);
-                } else {
-                    t = new Tile(i % 18 + offset, Math.floor(i / 18), side);
-                }
-                t.setTile(tile);
-
-                if (u != 3) {
-                    entities.push(t);
-                } else if ([7,8,21,22,35,36].indexOf(tile) != -1) {
-                    t.type = 'door';
-                    t.size.x = -4;
-                    door.push(t);
-                } else if ([7,8,21,22,35,36].indexOf(tile - 4) != -1) {
-                    t.type = 'enter';
-                    t.setTile(tile + 60 + 14 * 3);
-                    door.push(t);
-                }
-                if (tile == 11) {
-                    startX = t.pos.x + 8;
-                    startY = t.pos.y + 26;
-                }
-
-                if (side == 'left' && (!l || t.pos.x > l.pos.x)) {
-                    l = t;
-                } else if (side == 'right' && (!r || t.pos.x < r.pos.x)) {
-                    r = t;
-                } 
-            }
-
-            if ((i+1) % 18 == 0) {
-                if (side == 'left') {
-                    leftEnts.push(l);
-                } else if (side == 'right') {
-                    rightEnts.push(r);
-                }
-                l = null;
-                r = null;
-            }
+        if (currentLevel == 0) {
+            entities.push(new Money(new Vec(100, 15.5 * 16)));
+            entities.push(new Bottle(new Vec(50, 14.5 * 16)));
         }
-
-        if (u == 3) {
-            if (currentLevel == 1) {
-                startX = 32;
-                startY = 200;
-            }
-            var p = new Player();
-            p.pos.x = startX || t.pos.x;
-            p.pos.y = startY || t.pos.y;
-            p.updateGraphics();
-            entities.push(p);
-
-            for (var d = door.length - 1; d >= 0; d--) {
-                entities.push(door[d]);
-            }
-        }
-    }
-
-    if (currentLevel == 0) {
-        entities.push(new Money(new Vec(100, 15.5 * 16)));
-        entities.push(new Bottle(new Vec(50, 14.5 * 16)));
+    } else {
+        entities.push(new Title());
     }
 }
 
@@ -217,7 +221,8 @@ function init() {
              .add('tiles', 'tiles.png')
              .add('coin', 'coin.png')
              .add('money', 'TreasureSheet.png')
-             .add('bottle', 'MagicBottleSheet.png').load(function (loader, res) {
+             .add('bottle', 'MagicBottleSheet.png')
+             .add('title', 'title.png').load(function (loader, res) {
       resources = res;
 
       start();

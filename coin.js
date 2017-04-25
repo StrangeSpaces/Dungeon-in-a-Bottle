@@ -105,3 +105,38 @@ Bottle.prototype.setFrame = function(f) {
     this.updateGraphics();
 }
 
+Title.prototype = Object.create(Entity.prototype);
+Title.prototype.parent = Entity.prototype;
+
+function Title() {
+    Entity.call(this, 'title');
+
+    this.pos.x = logicalWidth / 2;
+    this.pos.y = logicalHeight / 2;
+
+    this.frame.width = 48;
+    this.frame.height = 32;
+    this.setFrame(0);
+
+    this.updateGraphics();
+}
+
+Title.prototype.update = function() {
+    this.c = (this.c || 0) + 1;
+    if (this.c % 6 == 0 && !this.done) {
+        if (this.f == 7) {
+            this.setFrame(3);
+            this.done = true
+        } else {
+            this.setFrame(this.f + 1);
+        }
+    }
+}
+
+Title.prototype.setFrame = function(f) {
+    this.frame.x = f % 4 * 48;
+    this.frame.y = Math.floor(f / 4) * 32;
+    this.f = f;
+
+    this.updateGraphics();
+}
