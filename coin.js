@@ -82,6 +82,7 @@ Bottle.prototype.run = function() {
         if(this.f == 19) {
             currentLevel++;
             start();
+            music.play();
         } else {
             this.setFrame(this.f + 1);
             if (this.f == 1) {
