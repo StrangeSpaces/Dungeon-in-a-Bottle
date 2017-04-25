@@ -160,6 +160,10 @@ function loadLevel() {
         }
 
         if (u == 3) {
+            if (currentLevel == 1) {
+                startX = 32;
+                startY = 200;
+            }
             var p = new Player();
             p.pos.x = startX || t.pos.x;
             p.pos.y = startY || t.pos.y;
@@ -174,6 +178,7 @@ function loadLevel() {
 
     if (currentLevel == 0) {
         entities.push(new Money(new Vec(100, 15.5 * 16)));
+        entities.push(new Bottle(new Vec(50, 14.5 * 16)));
     }
 }
 
@@ -211,7 +216,8 @@ function init() {
   PIXI.loader.add('pact', 'pact.png')
              .add('tiles', 'tiles.png')
              .add('coin', 'coin.png')
-             .add('money', 'TreasureSheet.png').load(function (loader, res) {
+             .add('money', 'TreasureSheet.png')
+             .add('bottle', 'MagicBottleSheet.png').load(function (loader, res) {
       resources = res;
 
       start();

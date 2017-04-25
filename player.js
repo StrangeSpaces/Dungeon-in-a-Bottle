@@ -103,6 +103,15 @@ Player.prototype.collide = function(leftOrRight) {
             this.pos.y - this.size.y < ent.pos.y+ent.size.y &&
             this.pos.y + this.size.y > ent.pos.y-ent.size.y) {
 
+            if (ent.type == 'bottle') {
+                this.bottling = true;
+                this.sprite.visible = false;
+                this.bottle = ent;
+                this.bottle.run();
+                this.updateGraphics();
+                break;
+            }
+
             if (ent.type == 'money') {
                 if (ent.sprite.visible && Math.random() < 0.08) {
                     this.coins.push(new Coin(this.pos, this.vel));
@@ -271,10 +280,15 @@ Player.prototype.jump = function(isBig) {
 }
 
 Player.prototype.update = function() {
-    this.makeCoin();
     for (var i = this.coins.length - 1; i >= 0; i--) {
         this.coins[i].update();
     }
+    if (this.bottling) {
+        this.bottle.run();
+        return;
+    }
+
+    this.makeCoin();
 
     if (this.deadCount > 0) {
         this.deadCount--;
