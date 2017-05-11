@@ -1,14 +1,14 @@
 var Key = {
   _pressed: {},
 
-  LEFT: 65,
-  UP: 32,
-  RIGHT: 68,
-  DOWN: 83,
-  R: 82,
+  LEFT: [65, 37],
+  UP: [32, 38],
+  RIGHT: [68, 39],
+  DOWN: [83, 40],
+  R: [82, 82],
   
   isDown: function(keyCode) {
-    return this._pressed[keyCode];
+    return this._pressed[keyCode[0]] || this._pressed[keyCode[1]];
   },
   
   onKeydown: function(event) {
